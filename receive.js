@@ -1,5 +1,12 @@
 const amqp = require('amqplib/callback_api');
 
+
+import { config as dotenvConfig } from 'dotenv'
+
+import app from './config/app'
+
+dotenvConfig()
+
 const createClient = () => {
   /* 
     posso criar toda a logica de criar o cliente aqui 
