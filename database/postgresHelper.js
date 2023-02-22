@@ -1,8 +1,6 @@
-import { Pool } from 'pg'
+const { Pool } = require('pg')
 
-export class PostgresHelper {
-  pool
-
+module.exports =  class PostgresHelper {
   constructor (connectionObject) {
     this.pool = new Pool(connectionObject)
   }

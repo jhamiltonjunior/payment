@@ -1,14 +1,16 @@
-import { PostgresHelper } from "./postgresHelper"
+const PostgresHelper = require("./postgresHelper")
+require('dotenv').config()
 
-export const connectionObject = {
+const connectionObject = {
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.BD_TABLE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+
 }
 
-export class PostgresUserRepository {
+module.exports = class PostgresUserRepository {
   constructor() {
     this.postgresHelper = new PostgresHelper(connectionObject)
   }
@@ -33,17 +35,17 @@ export class PostgresUserRepository {
     )
   }
 
-  async update (user) {
+  async update(userPaymentId, email) {
 
     await this.postgresHelper.writer(
       `
-      UPDATE users
-      SET
-      user_payment_id = $1
-      
-      WHERE
+        UPDATE users
+        SET
+        user_payment_id = $1
+        
+        WHERE
         email = $2`,
-      [user.userPaymentId, user.email]
+      [userPaymentId, email]
     )
   }
 }

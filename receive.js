@@ -1,19 +1,7 @@
 const amqp = require('amqplib/callback_api');
+const PostgresUserRepository = require('./database/userRepository');
 
-
-import { config as dotenvConfig } from 'dotenv'
-
-import app from './config/app'
-
-dotenvConfig()
-
-const createClient = () => {
-  /* 
-    posso criar toda a logica de criar o cliente aqui 
-    e executar dentro de channel.consume
-  */
-  console.log('oi')
-}
+const userRepo = new PostgresUserRepository()
 
 amqp.connect('amqp://localhost', function (error0, connection) {
   if (error0) {
@@ -33,10 +21,21 @@ amqp.connect('amqp://localhost', function (error0, connection) {
     console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
 
     channel.consume(queue, function (msg) {
-      console.log(" [x] Received %s", msg.content.toString());
-      createClient()
+      const [id, email] = msg.content.toString().split(' ');
+
+      (async () => {
+        try {
+          await userRepo.update(id, email)
+        } catch (error) {
+          console.log(error)
+        }
+      })()
     }, {
       noAck: true
     });
   });
 });
+
+process.on('uncaughtException', (error, origin) => {
+  console.log(`${origin} signal received. \n${error}`)
+})
